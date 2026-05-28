@@ -15,6 +15,7 @@ stats-*.json
 .wxt
 web-ext.config.ts
 native-host/
+.tmp-deepseek-live/
 
 # Editor directories and files
 .vscode/*

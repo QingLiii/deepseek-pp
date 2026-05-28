@@ -35,7 +35,7 @@ export function buildContinuationPrompt(originalTask: string, executions: ToolEx
   const results = renderToolResults(executions);
 
   return [
-    '以下是 Agent 任务刚刚执行的 MCP 工具结果。请基于原始任务和这些工具结果继续推进。',
+    '以下是工具续跑任务刚刚执行的 MCP 工具结果。请像真正的 Agent 一样，基于原始任务和这些工具结果继续推进。',
     '如果结果已经足够，请输出最终结论；只有确实需要更多信息、验证或文件修改时才继续调用工具。',
     '不要要求用户点击继续，也不要输出伪工具调用 JSON；需要继续操作时只输出可执行 XML 工具标签。',
     '',
@@ -61,7 +61,7 @@ export function buildNudgePrompt(
   const results = renderToolResults(executions);
 
   return [
-    '上一轮回复没有包含任何可执行 MCP 工具 XML，因此 Agent 无法继续执行。',
+    '上一轮回复没有包含任何可执行 MCP 工具 XML，因此自动化续跑无法继续执行。',
     '请根据原始任务和工具结果二选一：',
     '1. 如果任务仍未完成，本轮必须直接输出下一步 MCP 工具 XML。',
     '2. 如果任务已经完成，输出 <task_complete>{"summary":"..."}</task_complete>。',

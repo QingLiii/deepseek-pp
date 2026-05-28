@@ -1,0 +1,84 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+
+const root = path.resolve(new URL('..', import.meta.url).pathname);
+const failures = [];
+
+const requiredFiles = [
+  'core/automation/types.ts',
+  'core/automation/store.ts',
+  'core/automation/scheduler.ts',
+  'core/automation/runner.ts',
+  'core/inline-agent/types.ts',
+  'core/inline-agent/loop.ts',
+  'core/inline-agent/prompt.ts',
+  'core/inline-agent/renderer.ts',
+  'core/deepseek/adapter.ts',
+  'core/shell/index.ts',
+  'core/shell/contracts.ts',
+  'core/shell/policy.ts',
+  'entrypoints/sidepanel/pages/AutomationPage.tsx',
+  'scripts/shell-mcp-host.mjs',
+  'scripts/install-shell-host.mjs',
+];
+
+const removedPaths = [
+  'entrypoints/sidepanel/pages/AgentPage.tsx',
+  ['assets/screenshot-sidepanel', 'agent.svg'].join('-'),
+];
+
+for (const file of requiredFiles) {
+  if (!fs.existsSync(path.join(root, file))) {
+    failures.push(`missing required automation file: ${file}`);
+  }
+}
+
+for (const removed of removedPaths) {
+  if (fs.existsSync(path.join(root, removed))) {
+    failures.push(`obsolete Agent-named path still exists: ${removed}`);
+  }
+}
+
+assertContains('entrypoints/sidepanel/App.tsx', "label: '自动化'");
+assertContains('entrypoints/sidepanel/App.tsx', "import AutomationPage");
+assertContains('entrypoints/sidepanel/pages/AutomationPage.tsx', 'export default function AutomationPage');
+assertContains('core/automation/runner.ts', 'runDeepSeekAutomation');
+assertContains('core/automation/scheduler.ts', 'runAutomation');
+assertContains('entrypoints/content.ts', 'START_INLINE_AGENT_LOOP');
+assertContains('entrypoints/content.ts', 'restorePersistedInlineAgentTraces');
+assertContains('entrypoints/main-world.content.ts', 'runInlineAgentLoop');
+assertContains('core/inline-agent/loop.ts', 'INLINE_AGENT_MAX_STEPS');
+assertContains('core/inline-agent/prompt.ts', 'buildContinuationPrompt');
+assertContains('core/inline-agent/renderer.ts', 'createAgentStepElement');
+assertContains('core/deepseek/adapter.ts', 'BYPASS_HOOK_HEADER');
+assertContains('core/shell/index.ts', 'createShellMcpPresetInput');
+assertContains('scripts/shell-mcp-host.mjs', 'shell_exec');
+assertContains('scripts/install-shell-host.mjs', 'OFFICECLI_REQUIRED_HELP_PATTERNS');
+assertNotContains('README.md', ['Agent', '任务'].join(' '));
+assertNotContains('README.md', ['screenshot-sidepanel', 'agent.svg'].join('-'));
+
+if (failures.length > 0) {
+  console.error('Automation contract smoke failed:');
+  for (const failure of failures) console.error(`- ${failure}`);
+  process.exit(1);
+}
+
+console.log('Automation contract smoke passed');
+
+function assertContains(file, fragment) {
+  if (!readText(file).includes(fragment)) {
+    failures.push(`${file} does not contain required fragment: ${fragment}`);
+  }
+}
+
+function assertNotContains(file, fragment) {
+  if (readText(file).includes(fragment)) {
+    failures.push(`${file} contains forbidden fragment: ${fragment}`);
+  }
+}
+
+function readText(file) {
+  const absolute = path.join(root, file);
+  return fs.existsSync(absolute) ? fs.readFileSync(absolute, 'utf8') : '';
+}

@@ -28,7 +28,7 @@ function createManifest(env: ConfigEnv): UserManifest {
 
   return {
     name: 'DeepSeek++',
-    description: 'Agentic memory, skill, AgentRun, and MCP tools for DeepSeek',
+    description: 'Agentic memory, skills, agentic execution, automation, and MCP tools for DeepSeek',
     version: extensionVersion,
     permissions: isChromiumTarget ? [...permissions, 'sidePanel'] : permissions,
     optional_host_permissions: ['http://*/*', 'https://*/*'],

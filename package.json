@@ -1,8 +1,8 @@
 {
   "name": "deepseek-plus-plus",
-  "description": "Agentic memory, skill, AgentRun, and MCP tools for DeepSeek",
+  "description": "Agentic memory, skills, agentic execution, automation, and MCP tools for DeepSeek",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",
@@ -20,7 +20,7 @@
     "shell:install": "node scripts/install-shell-host.mjs",
     "smoke:shell": "node scripts/shell-smoke.mjs",
     "smoke:mcp": "node scripts/mcp-smoke.mjs",
-    "verify:agent-run": "node scripts/agent-run-contract-smoke.mjs",
+    "verify:automation": "node scripts/automation-contract-smoke.mjs",
     "verify:mcp:mock": "node scripts/mcp-live-mock.mjs",
     "postinstall": "wxt prepare"
   },

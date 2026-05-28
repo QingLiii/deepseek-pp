@@ -90,7 +90,7 @@ Use the printed URL as a Streamable HTTP MCP server in the sidepanel.
 - Discovery timeout: 20,000 ms by default.
 - Max result bytes: 64,000 by default.
 - Max tool count per server: 128 by default.
-- Manual chat MCP continuations are capped at 3 rounds; AgentRun continuations are capped at 8 tool loops.
+- Manual chat and automation MCP continuations are capped at 3 rounds; the inline continuation UI can keep showing restored Step records after page refresh.
 
 ### Local Files
 
@@ -108,7 +108,7 @@ Use the printed URL as a Streamable HTTP MCP server in the sidepanel.
 - Local filesystem MCP returns permission errors: check the MCP server or bridge root allowlist. The browser extension cannot bypass that local policy.
 - Tool call is shown as a format error: verify the XML tag name is available and the body is a JSON object with escaped backslashes.
 - Tool is discovered but not injected: check server enabled state, execution mode, and per-tool allow/deny state.
-- Tool executes once but does not continue: verify the current DeepSeek page has the latest extension content script. Manual chat continuations reuse the AgentRun runner and may continue MCP tool calls for up to 3 rounds when tool schemas are still available; scheduled/manual Agent tasks may continue for up to 8 tool loops.
+- Tool executes once but does not continue: verify the current DeepSeek page has the latest extension content script. Manual chat and automation continuations may continue MCP tool calls for up to 3 rounds when tool schemas are still available.
 - Stdio server does not start: verify the bridge process, command, args, cwd, and env. The extension itself does not launch stdio processes directly.
 - `mcp_native_host_unavailable`: run `npm run shell:install ...`, then restart the browser.
 - `officecli: command not found`: rerun `npm run shell:install ...` or place command-based OfficeCLI under `~/.local/bin`, `/opt/homebrew/bin`, `/usr/local/bin`, or `%LOCALAPPDATA%\OfficeCLI`.

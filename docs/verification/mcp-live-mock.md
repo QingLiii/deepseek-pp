@@ -19,8 +19,8 @@ All commands passed locally.
 
 - manual-chat style automatic MCP execution from an XML tool block
 - compact `<tool_results>` continuation prompt construction
-- AgentRun-style MCP continuation loop
-- AgentRun call-history record shape with MCP provider/tool context
+- Inline MCP continuation loop
+- Tool call-history record shape with MCP provider/tool context
 
 ### Shell MCP Local Smoke
 
@@ -61,4 +61,4 @@ The CLI verification cannot grant browser extension host permissions or assert t
 3. Open the sidepanel MCP tab and add a Streamable HTTP server using the printed loopback URL.
 4. Click `授权`, then `测试`, then `刷新工具`.
 5. Send a DeepSeek prompt that asks it to call `mcp_mock_echo` with `{"text":"manual"}` and confirm the tool result block appears and continuation is sent.
-6. Create an Agent task that asks for the same tool call, run it manually, and confirm the run records one MCP execution.
+6. Create an automation task that asks for the same tool call, run it manually, and confirm the run records one MCP execution.
