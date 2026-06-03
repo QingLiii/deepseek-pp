@@ -1,10 +1,37 @@
-# DeepSeek++ - DeepSeek 浏览器插件与 AI Agent 工具平台
+<p align="center">
+  <img src="assets/readme-header.png" width="860" alt="DeepSeek++">
+</p>
 
-DeepSeek++ 是面向 [DeepSeek](https://chat.deepseek.com) 网页版的 Chrome / Edge / Firefox 浏览器扩展，为 DeepSeek 注入 **侧边栏对话**、**类原生工具调用**、**内置网络工具**、**MCP 工具系统**、**Agentic 记忆系统**、**Skill 技能系统**、**系统提示词预设**、**Agent 式持续执行** 和 **自动化任务**。
+<h1 align="center">DeepSeek++</h1>
 
-English: DeepSeek++ is a DeepSeek browser extension for AI agent workflows, long-term memory, MCP tools, web search, Skills, system prompts, automation, and side-panel chat.
+<p align="center">
+  <strong>把 DeepSeek 网页版扩展成带记忆、工具、MCP、Skill 和自动化的 AI Agent 工作台</strong>
+</p>
 
-让 DeepSeek 像支持原生 tools 一样自动执行记忆保存、更新、删除、网络搜索、网页获取和 MCP 工具调用，拥有跨对话长期记忆，并通过 `/skill` 指令一键切换专家模式。侧边栏可以直接发起对话，也可以把网页选中文本送入对话；Agent 式持续执行让模型像 Claude Code / Codex 一样，在工具调用、结果回传和下一步生成之间持续推进任务；自动化任务则负责把固定任务放进独立会话里立即触发或按计划触发。
+<p align="center">
+  <a href="https://github.com/zhu1090093659/deepseek-pp/stargazers"><img alt="Stars" src="https://img.shields.io/github/stars/zhu1090093659/deepseek-pp?style=flat-square"></a>
+  <a href="https://github.com/zhu1090093659/deepseek-pp/watchers"><img alt="Watchers" src="https://img.shields.io/github/watchers/zhu1090093659/deepseek-pp?style=flat-square"></a>
+  <a href="https://github.com/zhu1090093659/deepseek-pp/network/members"><img alt="Forks" src="https://img.shields.io/github/forks/zhu1090093659/deepseek-pp?style=flat-square"></a>
+  <a href="https://github.com/zhu1090093659/deepseek-pp/issues"><img alt="Issues" src="https://img.shields.io/github/issues/zhu1090093659/deepseek-pp?style=flat-square"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/zhu1090093659/deepseek-pp/releases"><img alt="Release" src="https://img.shields.io/github/v/release/zhu1090093659/deepseek-pp?style=flat-square&label=release"></a>
+  <a href="#license"><img alt="License" src="https://img.shields.io/badge/license-MIT-2563eb?style=flat-square"></a>
+  <a href="https://chat.deepseek.com"><img alt="DeepSeek" src="https://img.shields.io/badge/DeepSeek-web-4f46e5?style=flat-square"></a>
+  <a href="https://linux.do"><img alt="LINUX DO" src="https://img.shields.io/badge/LINUX-DO-f59e0b?style=flat-square"></a>
+</p>
+
+<p align="center">
+  <a href="#功能速览">功能速览</a> ·
+  <a href="#适合场景">适合场景</a> ·
+  <a href="#安装">安装</a> ·
+  <a href="#060-变更回顾">0.6.0 变更</a>
+</p>
+
+DeepSeek++ 是面向 [DeepSeek](https://chat.deepseek.com) 网页版的 Chrome / Edge / Firefox 浏览器扩展，提供侧边栏对话、类原生工具调用、内置网络工具、MCP 工具系统、长期记忆、Skill、系统提示词预设、Agent 式持续执行和自动化任务。
+
+它可以把网页选中文本送入 DeepSeek，对需要多步工具执行、联网搜索、网页读取或定时跟踪的任务持续推进，并把项目背景、个人偏好和常用工作流沉淀为可复用的记忆与 Skill。
 
 ## 目录
 
