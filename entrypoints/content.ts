@@ -18,6 +18,7 @@ import { pickPetLine, type PetState } from '../core/pet/lines';
 import { DEFAULT_TOOL_DESCRIPTORS, createToolInvocationCatalog } from '../core/tool/invocation';
 import { normalizeBackgroundConfig } from '../core/background/config';
 import { stripToolCalls } from '../core/interceptor/tool-parser';
+import { extractLatestPlan } from '../core/tool/plan';
 import { augmentRequestBody } from '../core/interceptor/request-augmentation';
 import { containsInternalPromptMarker, sanitizeInternalPromptText } from '../core/prompt';
 import type { ResponseCompletePayload, ResponseTokenSpeedPayload } from '../core/interceptor/fetch-hook';
@@ -1545,6 +1546,11 @@ function startInlineAgentIfNeeded(
   if (continuableExecutions.length === 0) return;
   if (!complete.chatSessionId || complete.assistantMessageId == null) return;
 
+  // Carry plan executions from the triggering turn so the loop sees the initial plan
+  const loopExecutions = executions.filter(
+    (e) => continuableExecutions.includes(e) || e.provider?.id === 'plan' || e.name === 'update_plan',
+  );
+
   const loopId = crypto.randomUUID();
 
   const payload: InlineAgentStartPayload = {
@@ -1553,7 +1559,7 @@ function startInlineAgentIfNeeded(
     parentMessageId: complete.assistantMessageId,
     originalPrompt: complete.agentTaskPrompt || complete.originalPrompt,
     agentTaskPrompt: complete.agentTaskPrompt || complete.originalPrompt,
-    toolExecutions: continuableExecutions,
+    toolExecutions: loopExecutions,
     promptOptions: {
       modelType: complete.promptOptions.modelType,
       searchEnabled: complete.promptOptions.searchEnabled,
@@ -3214,6 +3220,9 @@ function createRestoredInlineAgentContainer(trace: InlineAgentTraceRecord): HTML
     stepEl.setAttribute('data-collapsed', step.collapsed ? 'true' : 'false');
     container.appendChild(stepEl);
   }
+
+  const restoredPlan = extractLatestPlan(trace.steps.flatMap((step) => step.toolExecutions));
+  if (restoredPlan) renderAgentPlan(container, restoredPlan);
 
   if (trace.status === 'complete') {
     container.appendChild(createAgentFooter(trace.totalSteps, trace.totalTools, false));

@@ -216,9 +216,18 @@ function exampleValue(schema: unknown): unknown {
     case 'boolean':
       return false;
     case 'array':
-      return [];
-    case 'object':
-      return {};
+      return value.items ? [exampleValue(value.items)] : [];
+    case 'object': {
+      const properties = value.properties;
+      if (!properties || typeof properties !== 'object') return {};
+      const props = properties as Record<string, unknown>;
+      const keys = Array.isArray(value.required)
+        ? (value.required as unknown[]).filter((key): key is string => typeof key === 'string')
+        : Object.keys(props);
+      const result: Record<string, unknown> = {};
+      for (const key of keys) result[key] = exampleValue(props[key]);
+      return result;
+    }
     case 'string':
     default: {
       const desc = typeof value.description === 'string' ? value.description.toLowerCase() : '';

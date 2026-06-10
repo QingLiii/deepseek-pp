@@ -58,6 +58,7 @@ export async function runInlineAgentLoop(
 
   try {
     const clientHeaders = createClientHeaders();
+    notifyPlanUpdated(post, loopId, 0, allExecutions);
 
     for (let step = 0; step < INLINE_AGENT_MAX_STEPS; step++) {
       if (signal.aborted) break;

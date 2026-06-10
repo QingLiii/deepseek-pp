@@ -6,6 +6,8 @@ import {
   planFromOutput,
 } from '../core/tool/plan';
 import type { ToolCall } from '../core/tool/types';
+import { renderToolSchemas } from '../core/prompt/augmentation';
+import { DEFAULT_TOOL_DESCRIPTORS } from '../core/tool/invocation';
 
 function updatePlanCall(payload: Record<string, unknown>): ToolCall {
   return {
@@ -59,6 +61,16 @@ describe('parsePlanPayload', () => {
       ],
     });
     expect(parsed.ok).toBe(false);
+  });
+});
+
+describe('injected tool schema example', () => {
+  it('renders an update_plan example payload that passes plan validation', () => {
+    const schemas = renderToolSchemas(DEFAULT_TOOL_DESCRIPTORS);
+    const match = schemas.match(/<update_plan>\n([\s\S]*?)\n<\/update_plan>/);
+    expect(match).not.toBeNull();
+    const parsed = parsePlanPayload(JSON.parse(match![1]));
+    expect(parsed.ok).toBe(true);
   });
 });
 

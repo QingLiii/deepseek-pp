@@ -38,7 +38,7 @@ export const PLAN_TOOL_DESCRIPTORS: ToolDescriptor[] = [
     name: 'update_plan',
     invocationName: 'update_plan',
     title: '更新任务计划',
-    description: '记录或更新当前任务的分步计划。多步任务开始时先调用一次列出全部步骤；每完成一步立即调用更新状态。最多一个步骤处于 in_progress。',
+    description: '记录或更新当前任务的分步计划。仅在需要调用其他工具的多步任务中使用，且应与其他工具调用在同一回复中一起输出：任务开始时列出全部步骤，每完成一步立即更新状态。最多一个步骤处于 in_progress。不要在单纯问答中单独调用此工具。',
     inputSchema: {
       type: 'object',
       properties: {

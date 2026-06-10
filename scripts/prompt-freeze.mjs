@@ -11,11 +11,11 @@ const EXPECTED_HASHES = {
   systemTemplateThinking: 'fa31e863e5f54f7a4e48cffdbae0e543028de4a565f77504e66edd707c73b5f3',
   memoryToolSchemas: 'a64e0a8874552177eba10089d5acfdc2996d0b703f83b1a57e9d76c733da9a7b',
   promptAugmentationBuild: '1b42d5b8df743388dfb86ee83e055e00a56fb5389bd7df1afd961c57b45b2335',
-  promptToolSchemaRenderer: 'd873bbe10566aaac581e827461e6abff82a0e3b5d1cd4ac1ca3c494b259bac01',
+  promptToolSchemaRenderer: '485476d25877b988ca4b253d72f9c691354044790fd6f1464e538075ce9bf3e9',
   inlineAgentContinuationPrompt: 'e705ca1110aec9d3f499e43deb620447c61542c09655dcced398d432ffb02119',
   inlineAgentNudgePrompt: 'dcc88afa3e5b1b9de3236918543cabba483ff78e90ea2c044e372c36d2418fbb',
   inlineAgentFinalizationPrompt: 'a476d1b4ad4d8f1895e2f1bedeacbc41932257c359106d7c9ecd090e7abff5da',
-  inlineAgentPromptHelpers: '0484120be969759f39b2f335aa2252ce7f43634891cd56715df20b898623fe99',
+  inlineAgentPromptHelpers: '034242c02ffb4d3d759267499f59cd76eb50c653e56c38ac02ca0016152c5047',
 };
 
 const sources = {
@@ -57,7 +57,10 @@ const cases = {
   inlineAgentPromptHelpers: [
     extractFunction('extractTaskCompleteSignal', sources.inlinePrompt),
     extractFunction('shouldNudge', sources.inlinePrompt),
+    extractFunction('renderPlanSection', sources.inlinePrompt),
     extractFunction('renderToolResults', sources.inlinePrompt),
+    extractFunction('renderCompactedToolResult', sources.inlinePrompt),
+    extractFunction('renderFullToolResult', sources.inlinePrompt),
     extractFunction('clampText', sources.inlinePrompt),
   ].join('\n\n'),
 };
