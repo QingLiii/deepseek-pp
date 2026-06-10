@@ -1,4 +1,5 @@
 import type { ToolCall, ToolDescriptor, ToolExecutionRecord } from '../types';
+import type { AgentPlan } from '../tool/plan';
 
 export interface InlineAgentStartPayload {
   loopId: string;
@@ -103,8 +104,16 @@ export interface InlineAgentLoopErrorMsg {
   error: string;
 }
 
+export interface InlineAgentPlanUpdatedMsg {
+  loopId: string;
+  stepIndex: number;
+  plan: AgentPlan;
+}
+
 export const INLINE_AGENT_MAX_STEPS = 25;
 export const INLINE_AGENT_MAX_NUDGES = 8;
 export const INLINE_AGENT_STEP_TIMEOUT_MS = 120_000;
 export const INLINE_AGENT_REQUEST_DELAY_MIN_MS = 2_500;
 export const INLINE_AGENT_REQUEST_DELAY_MAX_MS = 6_500;
+export const INLINE_AGENT_COMPACTION_KEEP_RECENT = 8;
+export const INLINE_AGENT_COMPACTION_SUMMARY_MAX_LENGTH = 200;

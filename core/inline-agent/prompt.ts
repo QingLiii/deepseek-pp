@@ -1,4 +1,9 @@
 import type { ToolExecutionRecord } from '../types';
+import { extractLatestPlan, renderPlanLines, type AgentPlan } from '../tool/plan';
+import {
+  INLINE_AGENT_COMPACTION_KEEP_RECENT,
+  INLINE_AGENT_COMPACTION_SUMMARY_MAX_LENGTH,
+} from './types';
 
 const PENDING_ACTION_RE = /(?:我(?:将|会|先|直接|现在|继续|尝试|开始|需要)|(?:接下来|下一步|然后).{0,24}(?:调用|创建|编辑|检查|验证|生成|保存|尝试)|(?:i(?:'ll| will| need to)|let me|next,? i).{0,48}(?:call|create|edit|inspect|validate|generate|save|try))/i;
 const FINALISH_RE = /(?:已(?:完成|创建|生成|保存|验证|写入|更新)|完成了|保存于|输出文件|最终|final answer|done|completed|created|saved|validated|written)/i;
@@ -33,15 +38,18 @@ export function shouldNudge(
 export function buildContinuationPrompt(originalTask: string, executions: ToolExecutionRecord[]): string {
   const hasFailures = executions.some((e) => !e.result.ok);
   const results = renderToolResults(executions);
+  const plan = extractLatestPlan(executions);
 
   return [
     '以下是工具续跑任务刚刚执行的工具结果。请像真正的 Agent 一样，基于原始任务和这些工具结果继续推进。',
     '如果结果已经足够，请输出最终结论；只有确实需要更多信息、验证或文件修改时才继续调用工具。',
     '不要要求用户点击继续，也不要输出伪工具调用 JSON；需要继续操作时只输出可执行 XML 工具标签。',
+    '对于需要多个步骤的任务，使用 update_plan 工具维护分步计划：开始时列出全部步骤，每完成一步立即更新状态（最多一个 in_progress）。',
     '',
     '<original_task>',
     clampText(originalTask, 8000),
     '</original_task>',
+    ...renderPlanSection(plan),
     ...(hasFailures ? [
       '至少一个工具执行失败。不要因为可恢复错误就停止；先阅读 summary/detail/error，并修正参数或改用合适的下一步继续完成任务。',
     ] : []),
@@ -52,6 +60,17 @@ export function buildContinuationPrompt(originalTask: string, executions: ToolEx
   ].join('\n');
 }
 
+function renderPlanSection(plan: AgentPlan | null): string[] {
+  if (!plan || plan.items.length === 0) return [];
+  return [
+    '',
+    '<current_plan>',
+    renderPlanLines(plan),
+    '</current_plan>',
+    '请按照当前计划继续执行；状态变化时调用 update_plan 更新。',
+  ];
+}
+
 export function buildNudgePrompt(
   originalTask: string,
   previousText: string,
@@ -59,6 +78,7 @@ export function buildNudgePrompt(
   nudgeCount: number,
 ): string {
   const results = renderToolResults(executions);
+  const plan = extractLatestPlan(executions);
 
   return [
     '上一轮回复没有包含任何可执行工具 XML，因此自动化续跑无法继续执行。',
@@ -70,6 +90,7 @@ export function buildNudgePrompt(
     '<original_task>',
     clampText(originalTask, 8000),
     '</original_task>',
+    ...renderPlanSection(plan),
     '',
     '<previous_assistant_text>',
     clampText(previousText, 4000),
@@ -98,8 +119,42 @@ export function buildFinalizationPrompt(originalTask: string, executions: ToolEx
   ].join('\n');
 }
 
-function renderToolResults(executions: ToolExecutionRecord[]) {
-  return executions.map((e) => ({
+interface CompactedToolResult {
+  tool: string;
+  ok: boolean;
+  summary: string;
+  compacted: true;
+}
+
+interface FullToolResult {
+  tool: string;
+  provider: string | undefined;
+  ok: boolean;
+  summary: string;
+  detail: string | undefined;
+  error: ToolExecutionRecord['result']['error'];
+  output: string | undefined;
+  truncated: boolean;
+}
+
+function renderToolResults(executions: ToolExecutionRecord[]): Array<CompactedToolResult | FullToolResult> {
+  const compactBefore = Math.max(0, executions.length - INLINE_AGENT_COMPACTION_KEEP_RECENT);
+  return executions.map((e, index) =>
+    index < compactBefore ? renderCompactedToolResult(e) : renderFullToolResult(e),
+  );
+}
+
+function renderCompactedToolResult(e: ToolExecutionRecord): CompactedToolResult {
+  return {
+    tool: e.name,
+    ok: e.result.ok,
+    summary: clampText(e.result.summary, INLINE_AGENT_COMPACTION_SUMMARY_MAX_LENGTH) ?? '',
+    compacted: true,
+  };
+}
+
+function renderFullToolResult(e: ToolExecutionRecord): FullToolResult {
+  return {
     tool: e.name,
     provider: e.provider?.displayName,
     ok: e.result.ok,
@@ -111,7 +166,7 @@ function renderToolResults(executions: ToolExecutionRecord[]) {
       8000,
     ),
     truncated: e.result.truncated === true,
-  }));
+  };
 }
 
 function clampText(value: string | undefined, maxLength: number): string | undefined {
