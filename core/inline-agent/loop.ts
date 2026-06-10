@@ -7,6 +7,7 @@ import {
 } from '../deepseek/adapter';
 import { extractToolCalls, stripToolCalls } from '../interceptor/tool-parser';
 import { executeToolCallsSequentially } from '../tool-loop/engine';
+import { extractLatestPlan } from '../tool/plan';
 import type { ToolCall, ToolDescriptor, ToolExecutionRecord } from '../types';
 import type { ToolParsingInput } from '../tool/invocation';
 import {
@@ -25,6 +26,7 @@ import {
   type InlineAgentLoopCompleteMsg,
   type InlineAgentLoopErrorMsg,
   type InlineAgentStartPayload,
+  type InlineAgentPlanUpdatedMsg,
   type InlineAgentStepCompleteMsg,
   type InlineAgentStreamChunkMsg,
   type InlineAgentToolDetectedMsg,
@@ -203,6 +205,7 @@ export async function runInlineAgentLoop(
         const nudgeExecs = await executeToolCallsSequentially(nudgeToolCalls, executeTool, { signal });
         allExecutions = [...allExecutions, ...nudgeExecs];
         totalTools += nudgeExecs.length;
+        notifyPlanUpdated(post, loopId, step, nudgeExecs);
 
         post('AGENT_STEP_COMPLETE', {
           loopId,
@@ -220,6 +223,7 @@ export async function runInlineAgentLoop(
       const stepExecs = await executeToolCallsSequentially(toolCalls, executeTool, { signal });
       allExecutions = [...allExecutions, ...stepExecs];
       totalTools += stepExecs.length;
+      notifyPlanUpdated(post, loopId, step, stepExecs);
 
       post('AGENT_STEP_COMPLETE', {
         loopId,
@@ -325,6 +329,21 @@ export async function runInlineAgentLoop(
       error: err instanceof Error ? err.message : String(err),
     } satisfies InlineAgentLoopErrorMsg);
   }
+}
+
+function notifyPlanUpdated(
+  post: PostFn,
+  loopId: string,
+  stepIndex: number,
+  executions: ToolExecutionRecord[],
+): void {
+  const plan = extractLatestPlan(executions);
+  if (!plan) return;
+  post('AGENT_PLAN_UPDATED', {
+    loopId,
+    stepIndex,
+    plan,
+  } satisfies InlineAgentPlanUpdatedMsg);
 }
 
 function waitBetweenDeepSeekRequests(signal: AbortSignal): Promise<void> {

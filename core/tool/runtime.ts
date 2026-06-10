@@ -19,6 +19,11 @@ import {
   type MemoryToolRuntime,
 } from './memory';
 import {
+  PLAN_TOOL_DESCRIPTORS,
+  executePlanToolCall,
+  isPlanToolName,
+} from './plan';
+import {
   WEB_SEARCH_TOOL_DESCRIPTORS,
   executeWebSearchToolCall,
   isWebSearchToolName,
@@ -50,6 +55,7 @@ export async function getRuntimeToolDescriptors(): Promise<ToolDescriptor[]> {
   return [
     ...MEMORY_TOOL_DESCRIPTORS,
     ...enabledWebDescriptors,
+    ...PLAN_TOOL_DESCRIPTORS,
     ...await getMcpToolDescriptors(),
   ];
 }
@@ -92,6 +98,10 @@ async function executeToolCallWithoutHistory(call: ToolCall): Promise<ToolResult
 
   if (isWebSearchToolName(call.name)) {
     return executeWebSearchToolCall(call);
+  }
+
+  if (isPlanToolName(call.name)) {
+    return executePlanToolCall(call);
   }
 
   if (call.provider?.kind === 'mcp' || call.descriptorId?.startsWith('mcp:')) {

@@ -34,6 +34,25 @@ export {
 } from './memory';
 
 export {
+  PLAN_TOOL_DESCRIPTORS,
+  PLAN_TOOL_NAMES,
+  PLAN_TOOL_PROVIDER,
+  executePlanToolCall,
+  extractLatestPlan,
+  isPlanToolName,
+  parsePlanPayload,
+  planFromOutput,
+  renderPlanLines,
+} from './plan';
+
+export type {
+  AgentPlan,
+  PlanItem,
+  PlanItemStatus,
+  PlanToolName,
+} from './plan';
+
+export {
   WEB_SEARCH_TOOL_DESCRIPTORS,
   WEB_SEARCH_TOOL_NAMES,
   WEB_SEARCH_TOOL_PROVIDER,

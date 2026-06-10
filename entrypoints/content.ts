@@ -28,6 +28,7 @@ import type {
   InlineAgentStepCompleteMsg,
   InlineAgentLoopCompleteMsg,
   InlineAgentLoopErrorMsg,
+  InlineAgentPlanUpdatedMsg,
   InlineAgentTraceRecord,
   InlineAgentTraceStepRecord,
 } from '../core/inline-agent/types';
@@ -39,6 +40,7 @@ import {
   updateStepStatus,
   addToolResultToStep,
   createAgentFooter,
+  renderAgentPlan,
 } from '../core/inline-agent/renderer';
 import { renderInlineMarkdown } from '../core/inline-agent/markdown';
 
@@ -1562,6 +1564,7 @@ function startInlineAgentIfNeeded(
       (d) =>
         d.provider?.kind === 'mcp' ||
         d.provider?.id === 'web' ||
+        d.provider?.id === 'plan' ||
         d.name === 'web_search' ||
         d.name === 'web_fetch',
     ),
@@ -1667,6 +1670,9 @@ function handleInlineAgentLoopEvent(type: string, data: unknown): void {
       break;
     case 'AGENT_TOOL_DETECTED':
       break;
+    case 'AGENT_PLAN_UPDATED':
+      handleAgentPlanUpdated(data as InlineAgentPlanUpdatedMsg);
+      break;
     case 'AGENT_STEP_COMPLETE':
       handleAgentStepComplete(data as InlineAgentStepCompleteMsg);
       schedulePetIdle();
@@ -1682,6 +1688,11 @@ function handleInlineAgentLoopEvent(type: string, data: unknown): void {
       schedulePetIdle(PET_FEEDBACK_DELAY_MS);
       break;
   }
+}
+
+function handleAgentPlanUpdated(msg: InlineAgentPlanUpdatedMsg): void {
+  if (msg.loopId !== inlineAgentLoopId || !inlineAgentContainer) return;
+  renderAgentPlan(inlineAgentContainer, msg.plan);
 }
 
 function handleAgentStepStarted(data: { loopId: string; stepIndex: number }): void {

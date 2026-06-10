@@ -1,3 +1,5 @@
+import type { AgentPlan, PlanItemStatus } from '../tool/plan';
+
 const AGENT_STEP_STYLE_ID = 'dpp-inline-agent-css';
 
 export function injectInlineAgentStyles(): void {
@@ -146,6 +148,53 @@ export function injectInlineAgentStyles(): void {
     body.dpp-theme-dark .dpp-agent-stop-btn:hover {
       background: #1f1f2e;
     }
+    .dpp-agent-plan {
+      margin-bottom: 8px;
+      border: 1px solid var(--dpp-border, #e5e7eb);
+      border-radius: 8px;
+      background: var(--dpp-step-bg, #fafafa);
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+    .dpp-agent-plan-title {
+      font-weight: 600;
+      color: #6366f1;
+      margin-bottom: 4px;
+    }
+    .dpp-agent-plan-item {
+      padding: 1px 0;
+      color: var(--dpp-muted, #6b7280);
+    }
+    .dpp-agent-plan-item[data-plan-status="completed"] {
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+    .dpp-agent-plan-item[data-plan-status="completed"]::before {
+      content: '\\2713 ';
+      color: #10b981;
+    }
+    .dpp-agent-plan-item[data-plan-status="in_progress"] {
+      color: #6366f1;
+      font-weight: 600;
+    }
+    .dpp-agent-plan-item[data-plan-status="in_progress"]::before {
+      content: '\\25B6 ';
+      font-size: 9px;
+    }
+    .dpp-agent-plan-item[data-plan-status="pending"]::before {
+      content: '\\25CB ';
+      color: #9ca3af;
+    }
+    body.dpp-theme-dark .dpp-agent-plan {
+      background: #1e1e2e;
+      border-color: #374151;
+    }
+    body.dpp-theme-dark .dpp-agent-plan-item {
+      color: #9ca3af;
+    }
+    body.dpp-theme-dark .dpp-agent-plan-item[data-plan-status="in_progress"] {
+      color: #818cf8;
+    }
     [data-dpp-body-text] {
       font-size: inherit;
       line-height: 1.7;
@@ -224,6 +273,31 @@ export function createAgentStepElement(stepIndex: number, onStop?: () => void): 
   step.appendChild(tools);
 
   return step;
+}
+
+export function renderAgentPlan(container: HTMLElement, plan: AgentPlan): void {
+  let panel = container.querySelector<HTMLElement>('.dpp-agent-plan');
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.className = 'dpp-agent-plan';
+    container.insertBefore(panel, container.firstChild);
+  }
+
+  panel.textContent = '';
+
+  const completed = plan.items.filter((item) => item.status === 'completed').length;
+  const title = document.createElement('div');
+  title.className = 'dpp-agent-plan-title';
+  title.textContent = `计划（${completed}/${plan.items.length}）`;
+  panel.appendChild(title);
+
+  for (const item of plan.items) {
+    const line = document.createElement('div');
+    line.className = 'dpp-agent-plan-item';
+    line.setAttribute('data-plan-status', item.status satisfies PlanItemStatus);
+    line.textContent = item.step;
+    panel.appendChild(line);
+  }
 }
 
 export function updateStepStreamText(step: HTMLElement, visibleText: string): void {

@@ -12,10 +12,10 @@ const EXPECTED_HASHES = {
   memoryToolSchemas: 'a64e0a8874552177eba10089d5acfdc2996d0b703f83b1a57e9d76c733da9a7b',
   promptAugmentationBuild: '1b42d5b8df743388dfb86ee83e055e00a56fb5389bd7df1afd961c57b45b2335',
   promptToolSchemaRenderer: 'd873bbe10566aaac581e827461e6abff82a0e3b5d1cd4ac1ca3c494b259bac01',
-  inlineAgentContinuationPrompt: '72c9a77d04a9d9b06258b3ba97e0f45c7d9c3a95d6beb402e1d3bbba5197b3c5',
-  inlineAgentNudgePrompt: '93bc1a0ce340e6212d30a9af1e345d0f7e1eaab9a495d8c78abb48f4ec94368d',
+  inlineAgentContinuationPrompt: 'e705ca1110aec9d3f499e43deb620447c61542c09655dcced398d432ffb02119',
+  inlineAgentNudgePrompt: 'dcc88afa3e5b1b9de3236918543cabba483ff78e90ea2c044e372c36d2418fbb',
   inlineAgentFinalizationPrompt: 'a476d1b4ad4d8f1895e2f1bedeacbc41932257c359106d7c9ecd090e7abff5da',
-  inlineAgentPromptHelpers: 'cdb723464379a5ead572eff1d93fd4585d7f845739d67fa214fbbdc0694153c6',
+  inlineAgentPromptHelpers: '0484120be969759f39b2f335aa2252ce7f43634891cd56715df20b898623fe99',
 };
 
 const sources = {
